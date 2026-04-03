@@ -1,0 +1,7 @@
+date,description,amount,type
+2026-01-01,Salary,500,income
+2026-01-02,Groceries,-50,expense
+2026-01-03,Transport,-20,expense
+2026-01-04,Restaurant,-30,expense
+2026-01-05,Freelance,200,income
+2026-01-06,Rent,-150,expense
