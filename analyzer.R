@@ -1,3 +1,5 @@
+options(repos = c(CRAN = "https://cloud.r-project.org")) # Set CRAN repository for package installation
+
 # Function to load data from a CSV file give a file path and return a data frame
 load_data <- function(file_path) {
     data <- read.csv(file_path, header = TRUE, sep = ",")
@@ -22,7 +24,7 @@ clean_data <- function(data) {
     return(data)
 }
 
-# Example Usage
+#  Usage
 my_data <- load_data("finance.csv") 
 cleaned_data <- clean_data(my_data)
 
@@ -53,7 +55,7 @@ summarize_finances <- function(cleaned_data) {
         balance = balance))
 }
 
-# Example Usage
+#  Usage
 summary_results <- summarize_finances(cleaned_data)
 
 # Function to Analyze Income and Expenses by Category
@@ -76,5 +78,29 @@ category_totals <- function(cleaned_data) {
     return(totals)
 }
 
-# Example Usage
-category_results <- category_totals(cleaned_data)
+#  Usage
+category_summary <- category_totals(cleaned_data)
+
+# Function to Visualize Income and Expenses by Category
+plot_bar_chart <- function(category_summary) {
+    print('\n')
+    print("Generating Bar Chart...")
+
+    # Convert List to Numbers
+    amounts <- unlist(category_summary)
+
+    # Extract Categories: "Income", "Expense"
+    categories <- names(category_summary)
+
+    # Create Bar Plot
+    barplot(
+        abs(amounts),
+        names.arg = categories, # Use category names as labels
+        main = "Expenses by Category", # Title of the Chart
+        xlab = "Category", # Label for X-axis
+        ylab = "Amount Spent ($)", # Label for Y-axis
+        col = rainbow(length(categories))) # Colors for the bars
+}
+
+#  Usage
+plot_bar_chart(category_summary)
