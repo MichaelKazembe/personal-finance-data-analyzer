@@ -8,4 +8,5 @@ load_data <- function(file_path) {
     return(data)
 }
 
-load_data("finance.csv") 
+my_data = load_data("finance.csv") 
+my_data
