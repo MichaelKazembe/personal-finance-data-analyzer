@@ -29,6 +29,7 @@ cleaned_data <- clean_data(my_data)
 # Function to Summarize Finances
 
 summarize_finances <- function(cleaned_data) {
+    print('\n')
     print("===== FINANCIAL SUMMARY =====")
 
     # Filter Income and Expenses
@@ -54,3 +55,26 @@ summarize_finances <- function(cleaned_data) {
 
 # Example Usage
 summary_results <- summarize_finances(cleaned_data)
+
+# Function to Analyze Income and Expenses by Category
+
+category_totals <- function(cleaned_data) {
+    print('\n')
+    print("===== CATEGORY TOTALS =====")
+
+    # Find Unique Categories in the Data
+    categories <- unique(cleaned_data$category)
+    # create an empty list
+    totals <- list()
+    # Loop through each category and calculate total amount
+    for (category in categories) {
+        total <- sum(cleaned_data$amount[cleaned_data$category == category])
+        totals[[category]] <- total
+        print(paste("Total for", category, ": $", total))
+    }
+
+    return(totals)
+}
+
+# Example Usage
+category_results <- category_totals(cleaned_data)
