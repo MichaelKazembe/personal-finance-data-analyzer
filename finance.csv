@@ -1,7 +1,8 @@
-date,description,amount,category
-2026-01-01,Salary,500,Income
-2026-01-02,Groceries,-50,Expense
-2026-01-03,Transport,-20,Expense
-2026-01-04,Restaurant,-30,Expense
-2026-01-05,Freelance,200,Income
-2026-01-06,Rent,-150,Expense
+date,description,amount,type,category
+2026-01-01,Salary,500,Income,Salary
+2026-01-02,Groceries,-50,Expense,Food
+2026-01-03,Transport,-20,Expense,Transport
+2026-01-04,Restaurant,-30,Expense,Food
+2026-01-05,Freelance,200,Income,Freelance
+2026-01-06,Rent,-150,Expense,Housing
+2026-01-08,Cinema,-40,Expense,Entertainment
