@@ -4,9 +4,22 @@ load_data <- function(file_path) {
 
     print("Data Loaded Successfully")
     print(data) 
-
     return(data)
 }
 
-my_data = load_data("finance.csv") 
-my_data
+# Function to Clean Data
+clean_data <- function(data) {
+    # convert date column to date datatype
+    data$date <- as.Date(data$date, format = "%Y-%m-%d")
+
+    # Remove Rows with Missing Values (NA values)
+    data <- na.omit(data)
+
+    print("Data Cleaned Successfully")
+    print(data)
+    return(data)
+}
+
+# Example Usage
+my_data <- load_data("finance.csv") 
+cleaned_data <- clean_data(my_data)
