@@ -46,46 +46,56 @@ category_dictionary <- list(
     Clothing = c("shopping")
 )
 
+# --------- Function to Automatically Categorize Transactions Based on Description ---------
+auto_categorize <- function(description) {
+    # Loop through each category and its associated keywords
+    for(category in names(category_dictionary)){
+        keywords <- category_dictionary[[category]]
+        # Check if any of the keywords for the current category are present in the description (case-insensitive)
+        if(any(grepl(paste(keywords, collapse="|"),
+                     description,
+                     ignore.case = TRUE))){
+            return(category)
+        }
+    }
+
+    return("Other")
+}
+
 # --------- Function to Clean Data ---------
 clean_data <- function(data) {
-    
-    # Replace "/" with "-" to standardize format
+
+    # Standardize dates
     data$date <- gsub("/", "-", data$date)
-    
-    # Convert to Date (invalid dates become NA)
-    data$date <- as.Date(data$date, format = "%Y-%m-%d")
-    
-    # Trim white spaces
+    data$date <- as.Date(data$date, format="%Y-%m-%d")
+
+    # Trim spaces
     data$description <- trimws(data$description)
     data$category <- trimws(data$category)
     data$type <- trimws(data$type)
-    
-    # Standardize type to "Income" or "Expense"
-    data$type <- ifelse(tolower(data$type) == "income", "Income", "Expense")
-    
-    # Convert amount to numeric (invalid entries become NA)
-    data$amount <- as.numeric(data$amount)
 
-    # Categorize transactions based on description keywords
-    data$category <- case_when(
-        grepl("salary|bonus|freelance|interest|refund|gift received", data$description, ignore.case = TRUE) ~ "Income",
-        grepl("grocery|coffee|dinner|snacks|restaurant", data$description, ignore.case = TRUE) ~ "Food",
-        grepl("taxi|transport", data$description, ignore.case = TRUE) ~ "Transport",
-        grepl("rent", data$description, ignore.case = TRUE) ~ "Housing",
-        grepl("electricity|internet|phone|subscription", data$description, ignore.case = TRUE) ~ "Utilities",
-        grepl("doctor|gym", data$description, ignore.case = TRUE) ~ "Health",
-        grepl("movie|cinema", data$description, ignore.case = TRUE) ~ "Entertainment",
-        grepl("loan", data$description, ignore.case = TRUE) ~ "Debt",
-        grepl("donation", data$description, ignore.case = TRUE) ~ "Charity",
-        grepl("shopping", data$description, ignore.case = TRUE) ~ "Clothing",
-        TRUE ~ "Other"
+    # Type classification
+    data$type <- case_when(
+        tolower(data$type) == "income" ~ "Income",
+        tolower(data$type) == "expense" ~ "Expense",
+        TRUE ~ NA_character_
     )
 
-    # Remove rows with NA values in critical columns (date, amount, type) 
-    data <- na.omit(data)
+    # Convert amount
+    data$amount <- as.numeric(data$amount)
 
-    print("Data Cleaned and Categorized Successfully")
-    print('\n')
+    # ---- Preserve existing categories ----
+    missing_category <- is.na(data$category) | data$category == ""
+
+    data$category[missing_category] <-
+        sapply(data$description[missing_category], auto_categorize)
+
+    # ---- Remove only unusable rows ----
+    data <- data[!is.na(data$date) &
+                 !is.na(data$amount) &
+                 !is.na(data$type), ]
+
+    print("Data Cleaned Successfully\n")
     print(data)
 
     return(data)
@@ -96,8 +106,10 @@ summarize_finances <- function(data) {
     print('\n')
     print("===== FINANCIAL SUMMARY =====")
     
+    # Calculate totals
     total_income <- sum(data$amount[data$type == "Income"])
     total_expenses <- sum(data$amount[data$type == "Expense"])
+    # Calculate net balance
     balance <- total_income + total_expenses
     
     print(paste("Total Income: $", total_income))
@@ -111,80 +123,74 @@ summarize_finances <- function(data) {
 
 
 # --------- Function to Analyze Income and Expenses by Category ---------
-category_totals <- function(data) {
-    print('\n')
-    print("===== CATEGORY TOTALS =====")
-    
-    # Get unique categories
-    categories <- unique(data$category)
-    totals <- list()
-    
-    # Calculate total for each category
-    for(category in categories){
-        total <- sum(data$amount[data$category == category]) # Sum amounts for the current category
-        totals[[category]] <- total # Store total in a list with category as the key
-        print(paste("Total for", category, ": $", total))
-    }
-    
-    return(totals)
+category_totals <- function(data){
+
+    print("\n===== CATEGORY TOTALS =====")
+    #  Group by type and category, then summarize the total amount for each group
+    summary <- data %>% 
+        group_by(type, category) %>%
+        summarise(total = sum(amount), .groups="drop")
+
+    print(summary)
+
+    return(summary)
 }
 
 # --------- Function to Visualize Income and Expenses by Category ---------
-plot_bar_chart <- function(category_summary) {
-    print('\n')
-    print("Generating Bar Chart...")
-    # Convert category summary to numeric values for plotting
-    amounts <- abs(unlist(category_summary))
-    # Get category names
-    categories <- names(category_summary)
-    # Generate colors for the bars
-    colors <- rainbow(length(categories))
-    
-    barplot(amounts,
-        names.arg = categories, # Add category names as labels on the x-axis
-        main = "Income and Expenses by Category", # Add title to the bar chart
-        xlab = "Category", # Add x-axis label
-        ylab = "Amount ($)", # Add y-axis label
-        col = colors) # Add colors to the bars
+plot_bar_chart <- function(summary){
+
+    print("\nGenerating Bar Chart...")
+
+    income <- summary[summary$type=="Income",]
+    expense <- summary[summary$type=="Expense",]
+
+    # Set up the plotting area to have 1 row and 2 columns for side-by-side plots
+    par(mfrow=c(1,2))
+
+    # Plot Income and Expenses as bar charts
+    barplot(income$total,
+            names.arg=income$category,
+            main="Income by Category",
+            col=rainbow(nrow(income)),
+            las=2)
+
+    barplot(abs(expense$total),
+            names.arg=expense$category,
+            main="Expenses by Category",
+            col=rainbow(nrow(expense)),
+            las=2)
+
+    par(mfrow=c(1,1))
 }
 
 # --------- Function to Plot a Pie Chart for Expenses ---------
-plot_pie_chart <- function(data) {
-    print('\n')
-    print("Generating Pie Chart for Expenses...")  
-    # Filter only expenses
-    expense_data <- subset(data, type == "Expense")  
-    # Sum per category
-    expense_summary <- tapply(expense_data$amount, expense_data$category, sum) 
-    # Generate colors for the pie chart
-    colors <- rainbow(length(expense_summary))
+plot_pie_chart <- function(data){
 
-    # Create pie chart
-    pie(abs(expense_summary), # Use absolute values for the pie chart
-        labels = names(expense_summary), # Add category names as labels
-        col = colors, # Add colors to the pie chart
-        main = "Expense Distribution by Category") # Add title to the pie chart
+    print("\nGenerating Expense Pie Chart...")
+    # Filter only expenses for the pie chart
+    expense_data <- data[data$type=="Expense",]
+
+    # Group by category and summarize total expenses for each category
+    expense_summary <- expense_data %>%
+        group_by(category) %>%
+        summarise(total = abs(sum(amount)))
+
+    # Plot the pie chart
+    pie(expense_summary$total,
+        labels=expense_summary$category,
+        col=rainbow(nrow(expense_summary)),
+        main="Expense Distribution")
 }
+    # --------- Main function to run the analysis ---------
+    main <- function() {
+        my_data <- load_data("finance.csv")
+        cleaned_data <- clean_data(my_data)
+        summary_results <- summarize_finances(cleaned_data)
+        category_summary <- category_totals(cleaned_data)
+        plot_bar_chart(category_summary)
+        plot_pie_chart(cleaned_data)
+        return(summary_results)
+    }
 
-# --------- Main function to run the analysis ---------
-main <- function() {
-
-    # Load data
-    my_data <- load_data("finance.csv") 
-
-    # Clean data
-    cleaned_data <- clean_data(my_data)
-
-    # Summarize finances
-    summary_results <- summarize_finances(cleaned_data)
-
-    # Category totals
-    category_summary <- category_totals(cleaned_data)
-
-    # Visualizations
-    plot_bar_chart(category_summary) # Generate bar chart for income and expenses by category
-    # plot_pie_chart(cleaned_data) # Generate pie chart for expenses
-}
-
-# Run the main function to execute the analysis
-main()
+    # Run the main function to execute the analysis
+    main()
