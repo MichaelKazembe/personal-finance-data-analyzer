@@ -69,12 +69,14 @@ category_totals <- function(data) {
     print('\n')
     print("===== CATEGORY TOTALS =====")
     
+    # Get unique categories
     categories <- unique(data$category)
     totals <- list()
     
+    # Calculate total for each category
     for(category in categories){
-        total <- sum(data$amount[data$category == category])
-        totals[[category]] <- total
+        total <- sum(data$amount[data$category == category]) # Sum amounts for the current category
+        totals[[category]] <- total # Store total in a list with category as the key
         print(paste("Total for", category, ": $", total))
     }
     
@@ -123,18 +125,18 @@ main <- function() {
     # Load
     my_data <- load_data("finance.csv") 
 
-    # Clean
+    # Clean 
     cleaned_data <- clean_data(my_data)
 
     # Summarize
-    summary_results <- summarize_finances(cleaned_data)
+    summary_results <- summarize_finances(cleaned_data) # Get financial summary for visualization
 
     # Category totals
-    category_summary <- category_totals(cleaned_data)
+    category_summary <- category_totals(cleaned_data) # Get category totals for visualization
 
     # Visualize
-    plot_bar_chart(category_summary)
-    plot_pie_chart(cleaned_data)
+    plot_bar_chart(category_summary) # Visualize bar chart for category totals
+    plot_pie_chart(cleaned_data) # Visualize pie chart for expense distribution
 }
 
 # Run the main function
