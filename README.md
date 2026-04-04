@@ -28,8 +28,8 @@ Personal Finance Data Analyzer in R is an application that allows users to impor
 
 # Future Work
 
-{Make a list of things that you need to fix, improve, and add in the future.}
-
-- Item 1
-- Item 2
-- Item 3
+- Add support for multiple users and separate financial profiles
+- Improve chart customization and export charts as image files
+- Add monthly and yearly financial trend analysis
+- Implement data validation before importing CSV files
+- Develop a graphical user interface (GUI) version of the application
