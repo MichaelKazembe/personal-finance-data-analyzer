@@ -181,16 +181,31 @@ plot_pie_chart <- function(data){
         col=rainbow(nrow(expense_summary)),
         main="Expense Distribution")
 }
-    # --------- Main function to run the analysis ---------
-    main <- function() {
-        my_data <- load_data("finance.csv")
-        cleaned_data <- clean_data(my_data)
-        summary_results <- summarize_finances(cleaned_data)
-        category_summary <- category_totals(cleaned_data)
-        plot_bar_chart(category_summary)
-        plot_pie_chart(cleaned_data)
-        return(summary_results)
-    }
 
-    # Run the main function to execute the analysis
-    main()
+# --------- Function to Display Menu Options ---------
+show_menu <- function(){
+
+    cat("\n==============================\n")
+    cat(" PERSONAL FINANCE MANAGER\n")
+    cat("==============================\n")
+    cat("1. View Financial Summary\n")
+    cat("2. View Category Totals\n")
+    cat("3. Show Charts\n")
+    cat("4. Reload Data\n")
+    cat("5. Exit\n")
+    cat("==============================\n")
+}
+
+# --------- Main function to run the analysis ---------
+main <- function() {
+    my_data <- load_data("finance.csv")
+    cleaned_data <- clean_data(my_data)
+    summary_results <- summarize_finances(cleaned_data)
+    category_summary <- category_totals(cleaned_data)
+    plot_bar_chart(category_summary)
+    plot_pie_chart(cleaned_data)
+    return(summary_results)
+}
+
+# Run the main function to execute the analysis
+main()
