@@ -18,7 +18,7 @@ Personal Finance Data Analyzer in R is an application that allows users to impor
 
 ## Library
 
-- Base R (no additional packages required)
+- dplyr
 
 # Useful Websites
 
