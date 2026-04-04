@@ -196,15 +196,61 @@ show_menu <- function(){
     cat("==============================\n")
 }
 
+# --------- Function to Run the Command-Line Interface ---------
+run_cli <- function(cleaned_data){
+
+    repeat {
+
+        # Show menu
+        show_menu()
+
+        # Get user choice
+        choice <- readline("Select an option: ")
+
+        # Decision system
+        switch(choice,
+
+            "1" = {
+                summarize_finances(cleaned_data)
+            },
+
+            "2" = {
+                category_totals(cleaned_data)
+            },
+
+            "3" = {
+                plot_pie_chart(cleaned_data)
+            },
+
+            "4" = {
+                cat("\nReloading data...\n")
+                raw_data <- load_data("finance.csv")
+                cleaned_data <- clean_data(raw_data)
+            },
+
+            "5" = {
+                cat("\nExiting program... Goodbye!\n")
+                break
+            },
+
+            {
+                cat("\nInvalid option. Please try again.\n")
+            }
+        )
+    }
+}
+
 # --------- Main function to run the analysis ---------
-main <- function() {
-    my_data <- load_data("finance.csv")
-    cleaned_data <- clean_data(my_data)
-    summary_results <- summarize_finances(cleaned_data)
-    category_summary <- category_totals(cleaned_data)
-    plot_bar_chart(category_summary)
-    plot_pie_chart(cleaned_data)
-    return(summary_results)
+main <- function(){
+
+    # Load data once
+    raw_data <- load_data("finance.csv")
+
+    # Clean data once
+    cleaned_data <- clean_data(raw_data)
+
+    # Start interactive CLI
+    run_cli(cleaned_data)
 }
 
 # Run the main function to execute the analysis
