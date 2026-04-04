@@ -5,4 +5,30 @@ date,description,amount,type,category
 2026-01-04,Restaurant,-30,Expense,Food
 2026-01-05,Freelance,200,Income,Freelance
 2026-01-06,Rent,-150,Expense,Housing
-2026-01-08,Cinema,-40,Expense,Entertainment
+2026-01-08,, -40,Expense,Entertainment
+2026-01-09,Subscription,-15,Expense,Utilities
+2026/01/10,Insurance,-120,Expense,Insurance
+2026-01-11,Coffee,-5,Expense,Food
+2026-01-11,Bonus,300,Income,
+2026-01-12,Internet,-60,Expense,Utilities
+2026-01-13,Salary,500,Income,Salary
+ ,Gift,-25,Expense,Personal
+2026-01-15,Taxi,-18,Expense,Transport
+2026-01-16,Freelance,150,Income,Freelance
+2026-01-17,Electricity,-95,Expense,Utilities
+2026-01-18,Gym,-45,Expense,Health
+2026-01-19,Dinner,-70,Expense,Food
+2026-01-20,Loan Repayment,-200,Expense,Debt
+2026-01-21,Refund,25,Income,Other
+2026-01-22,Movie,-12,Expense,Entertainment
+2026/01/23,Phone,-55,Expense,Utilities
+2026-01-24,Salary,500,Income,Salary
+2026-01-25,Shopping,-120,Expense,Clothing
+2026-01-26,Freelance,250,Income,Freelance
+2026-01-26,Doctor,-80,Expense,Health
+2026-01-27,Snacks,-10,Expense,Food
+2026-01-28,Donation,-30,Expense,Charity
+2026-01-29,Transfer,-100,Expense,Other
+2026-01-30,Gift Received,75,Income,Personal
+2026-01,Unknown,-5,Expense,Misc
+2026-01-31,Interest,5,Income,Other

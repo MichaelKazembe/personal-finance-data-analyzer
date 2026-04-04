@@ -1,27 +1,30 @@
 # Overview
 
-{Important! Do not say in this section that this is college assignment. Talk about what you are trying to accomplish as a software engineer to further your learning.}
+Personal Finance Data Analyzer in R is an application that allows users to import financial records from a CSV file, clean and categorize the data, and generate summary statistics and visualizations.
 
-{Provide a description of the software that you wrote to demonstrate the R language.}
+## Software Demo
 
-{Describe your purpose for writing this software.}
-
-{Provide a link to your YouTube demonstration. It should be a 4-5 minute demo of the software running and a walkthrough of the code. Focus should be on sharing what you learned about the language syntax.}
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo ](http://youtube.link.goes.here)
 
 # Development Environment
 
-{Describe the tools that you used to develop the software}
+## IDE
 
-{Describe the programming language that you used and any libraries.}
+- Visual Studio Code (VScode)
+
+## Programming language
+
+- R Language
+
+## Library
+
+- Base R (no additional packages required)
 
 # Useful Websites
 
-{Make a list of websites that you found helpful in this project}
-
-- [Web Site Name](http://url.link.goes.here)
-- [Web Site Name](http://url.link.goes.here)
+- [R Project](http://r-project.org)
+- [W3 Schools](http://w3schools.org)
+- [Geeks for Geeks](https://www.geeksforgeeks.org/r-language/)
 
 # Future Work
 

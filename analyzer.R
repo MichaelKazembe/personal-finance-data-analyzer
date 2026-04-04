@@ -21,10 +21,6 @@ finance_data <- data.frame(
   category = c("Salary","Food","Transport","Food","Freelance","Housing",NA,"Entertainment")
 )
 
-# Write CSV to disk
-write.csv(finance_data, "finance.csv", row.names = FALSE)
-}
-
 # Function to Clean Data
 clean_data <- function(data) {
     # Convert date column to Date type
@@ -125,6 +121,9 @@ main <- function() {
     # Load
     my_data <- load_data("finance.csv") 
 
+    # Write CSV to disk
+    write.csv(finance_data, "finance.csv", row.names = FALSE)}
+
     # Clean 
     cleaned_data <- clean_data(my_data)
 
@@ -136,7 +135,7 @@ main <- function() {
 
     # Visualize
     plot_bar_chart(category_summary) # Visualize bar chart for category totals
-    plot_pie_chart(cleaned_data) # Visualize pie chart for expense distribution
+    # plot_pie_chart(cleaned_data) # Visualize pie chart for expense distribution
 }
 
 # Run the main function
