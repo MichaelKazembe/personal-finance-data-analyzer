@@ -4,7 +4,7 @@ Personal Finance Data Analyzer in R is an application that allows users to impor
 
 ## Software Demo
 
-[Software Demo ](http://youtube.link.goes.here)
+[Software Demo ](https://youtu.be/prUq_6TLgvw)
 
 # Development Environment
 
@@ -14,7 +14,7 @@ Personal Finance Data Analyzer in R is an application that allows users to impor
 
 ## Programming language
 
-- R Language
+- R
 
 ## Library
 
