@@ -1,7 +1,15 @@
 options(repos = c(CRAN = "https://cloud.r-project.org")) # Set CRAN repository for package installation
 
-# Function to load data from a CSV file give a file path and return a data frame
+library(dplyr)  # Load dplyr for case_when function
+
+# --------- Function to load data from a CSV file ---------
 load_data <- function(file_path) {
+    # Check if the file exists before attempting to read it
+    if(!file.exists(file_path)) {
+        print(paste("File not found:", file_path))
+        return(NULL)
+    }
+    # Read from file
     data <- read.csv(file_path, header = TRUE, sep = ",")
 
     print("Data Loaded Successfully")
@@ -10,7 +18,7 @@ load_data <- function(file_path) {
     return(data)
 }
 
-# Function to Create a Sample Data Frame
+# --------- Function to Create a Sample Data Frame ---------
 create_sample_data <- function() {
  # Create sample data frame
 finance_data <- data.frame(
@@ -20,28 +28,70 @@ finance_data <- data.frame(
   type = c("Income","Expense","Expense","Expense","Income","Expense","Expense","Expense"),
   category = c("Salary","Food","Transport","Food","Freelance","Housing",NA,"Entertainment")
 )
+  return(finance_data)
+}
 
-# Function to Clean Data
+# --------- Categories List ---------
+category_dictionary <- list(
+    Salary = c("salary", "bonus"),
+    Freelance = c("freelance"),
+    Food = c("grocery","restaurant","coffee","snacks","kfc","shoprite"),
+    Transport = c("taxi","transport","fuel","uber"),
+    Housing = c("rent"),
+    Utilities = c("electricity","internet","phone","subscription","airtel","tnm"),
+    Health = c("doctor","hospital","gym"),
+    Entertainment = c("movie","cinema","netflix"),
+    Debt = c("loan"),
+    Charity = c("donation"),
+    Clothing = c("shopping")
+)
+
+# --------- Function to Clean Data ---------
 clean_data <- function(data) {
-    # Convert date column to Date type
-    data$date <- as.Date(data$date, format = "%Y-%m-%d")   
-    # Normalize 'type' column
-    data$type <- ifelse(tolower(data$type) == "income","Income","Expense")  
-    # Ensure 'category' is character
-    data$category <- as.character(data$category)
-    # Ensure 'amount' is numeric
+    
+    # Replace "/" with "-" to standardize format
+    data$date <- gsub("/", "-", data$date)
+    
+    # Convert to Date (invalid dates become NA)
+    data$date <- as.Date(data$date, format = "%Y-%m-%d")
+    
+    # Trim white spaces
+    data$description <- trimws(data$description)
+    data$category <- trimws(data$category)
+    data$type <- trimws(data$type)
+    
+    # Standardize type to "Income" or "Expense"
+    data$type <- ifelse(tolower(data$type) == "income", "Income", "Expense")
+    
+    # Convert amount to numeric (invalid entries become NA)
     data$amount <- as.numeric(data$amount)
-    # Remove rows with missing values
-    data <- na.omit(data)  
 
-    print("Data Cleaned Successfully")
+    # Categorize transactions based on description keywords
+    data$category <- case_when(
+        grepl("salary|bonus|freelance|interest|refund|gift received", data$description, ignore.case = TRUE) ~ "Income",
+        grepl("grocery|coffee|dinner|snacks|restaurant", data$description, ignore.case = TRUE) ~ "Food",
+        grepl("taxi|transport", data$description, ignore.case = TRUE) ~ "Transport",
+        grepl("rent", data$description, ignore.case = TRUE) ~ "Housing",
+        grepl("electricity|internet|phone|subscription", data$description, ignore.case = TRUE) ~ "Utilities",
+        grepl("doctor|gym", data$description, ignore.case = TRUE) ~ "Health",
+        grepl("movie|cinema", data$description, ignore.case = TRUE) ~ "Entertainment",
+        grepl("loan", data$description, ignore.case = TRUE) ~ "Debt",
+        grepl("donation", data$description, ignore.case = TRUE) ~ "Charity",
+        grepl("shopping", data$description, ignore.case = TRUE) ~ "Clothing",
+        TRUE ~ "Other"
+    )
+
+    # Remove rows with NA values in critical columns (date, amount, type) 
+    data <- na.omit(data)
+
+    print("Data Cleaned and Categorized Successfully")
     print('\n')
     print(data)
-    
+
     return(data)
 }
 
-# Function to Summarize Finances
+# --------- Function to Summarize Finances ---------
 summarize_finances <- function(data) {
     print('\n')
     print("===== FINANCIAL SUMMARY =====")
@@ -60,7 +110,7 @@ summarize_finances <- function(data) {
 }
 
 
-# Function to Analyze Income and Expenses by Category
+# --------- Function to Analyze Income and Expenses by Category ---------
 category_totals <- function(data) {
     print('\n')
     print("===== CATEGORY TOTALS =====")
@@ -79,7 +129,7 @@ category_totals <- function(data) {
     return(totals)
 }
 
-# Function to Visualize Income and Expenses by Category
+# --------- Function to Visualize Income and Expenses by Category ---------
 plot_bar_chart <- function(category_summary) {
     print('\n')
     print("Generating Bar Chart...")
@@ -98,7 +148,7 @@ plot_bar_chart <- function(category_summary) {
         col = colors) # Add colors to the bars
 }
 
-# Function to Plot a Pie Chart for Expenses
+# --------- Function to Plot a Pie Chart for Expenses ---------
 plot_pie_chart <- function(data) {
     print('\n')
     print("Generating Pie Chart for Expenses...")  
@@ -116,27 +166,25 @@ plot_pie_chart <- function(data) {
         main = "Expense Distribution by Category") # Add title to the pie chart
 }
 
-# Main function to run the analysis
+# --------- Main function to run the analysis ---------
 main <- function() {
-    # Load
+
+    # Load data
     my_data <- load_data("finance.csv") 
 
-    # Write CSV to disk
-    write.csv(finance_data, "finance.csv", row.names = FALSE)}
-
-    # Clean 
+    # Clean data
     cleaned_data <- clean_data(my_data)
 
-    # Summarize
-    summary_results <- summarize_finances(cleaned_data) # Get financial summary for visualization
+    # Summarize finances
+    summary_results <- summarize_finances(cleaned_data)
 
     # Category totals
-    category_summary <- category_totals(cleaned_data) # Get category totals for visualization
+    category_summary <- category_totals(cleaned_data)
 
-    # Visualize
-    plot_bar_chart(category_summary) # Visualize bar chart for category totals
-    # plot_pie_chart(cleaned_data) # Visualize pie chart for expense distribution
+    # Visualizations
+    plot_bar_chart(category_summary) # Generate bar chart for income and expenses by category
+    # plot_pie_chart(cleaned_data) # Generate pie chart for expenses
 }
 
-# Run the main function
+# Run the main function to execute the analysis
 main()
