@@ -147,6 +147,13 @@ plot_bar_chart <- function(summary){
     # Set up the plotting area to have 1 row and 2 columns for side-by-side plots
     par(mfrow=c(1,2))
 
+    # Save chart to file because CLI sessions may not automatically show windows
+    file_name <- "bar_chart.png"
+    png(filename = file_name, width = 1200, height = 600)
+
+    # Set up the plotting area to have 1 row and 2 columns for side-by-side plots
+    par(mfrow=c(1,2))
+
     # Plot Income and Expenses as bar charts
     barplot(income$total,
             names.arg=income$category,
@@ -161,6 +168,10 @@ plot_bar_chart <- function(summary){
             las=2)
 
     par(mfrow=c(1,1))
+    dev.off()
+    file_path <- normalizePath(file_name)
+    cat("Bar chart saved to", file_path, "\n")
+    if (interactive()) browseURL(file_path)
 }
 
 # --------- Function to Plot a Pie Chart for Expenses ---------
@@ -175,11 +186,17 @@ plot_pie_chart <- function(data){
         group_by(category) %>%
         summarise(total = abs(sum(amount)))
 
-    # Plot the pie chart
+    # Save chart to file because CLI sessions may not automatically show windows
+    file_name <- "expense_pie_chart.png"
+    png(filename = file_name, width = 800, height = 800)
     pie(expense_summary$total,
         labels=expense_summary$category,
         col=rainbow(nrow(expense_summary)),
         main="Expense Distribution")
+    dev.off()
+    file_path <- normalizePath(file_name)
+    cat("Expense pie chart saved to", file_path, "\n")
+    if (interactive()) browseURL(file_path)
 }
 
 # --------- Function to Display Menu Options ---------
@@ -194,6 +211,45 @@ show_menu <- function(){
     cat("4. Reload Data\n")
     cat("5. Exit\n")
     cat("==============================\n")
+}
+
+# --------- Function to Display Charts Menu ---------
+show_chart_menu <- function(){
+    cat("\n===== CHARTS MENU =====\n")
+    cat("1. Expense Pie Chart\n")
+    cat("2. Category Bar Chart\n")
+    cat("3. Back to Main Menu\n")
+}
+
+# --------- Function to Run Chart CLI ---------
+chart_cli <- function(cleaned_data){
+
+    repeat{
+
+        show_chart_menu()
+
+        choice <- readline("Select chart option: ")
+
+        switch(choice,
+
+            "1" = {
+                plot_pie_chart(cleaned_data)
+            },
+
+            "2" = {
+                summary <- category_totals(cleaned_data)
+                plot_bar_chart(summary)
+            },
+
+            "3" = {
+                break
+            },
+
+            {
+                cat("Invalid option\n")
+            }
+        )
+    }
 }
 
 # --------- Function to Run the Command-Line Interface ---------
@@ -219,7 +275,7 @@ run_cli <- function(cleaned_data){
             },
 
             "3" = {
-                plot_pie_chart(cleaned_data)
+                chart_cli(cleaned_data)
             },
 
             "4" = {
